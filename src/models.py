@@ -2,6 +2,32 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class Planet(db.Model):
+    __tablename__ = 'planets'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=True)
+    climate = db.Column(db.String(250), nullable=True)
+    population = db.Column(db.Integer, nullable=True)
+    orbital_period  = db.Column(db.Integer, nullable=True)
+    rotation_period = db.Column(db.Integer, nullable=True)
+    diameter = db.Column(db.Integer, nullable=True)
+    # favoritos = db.relationship ('Favoritos', backref= 'planets', lazy=True)
+    def __repr__(self):
+        return '<Characters %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name" : self.name,
+            "climate": self.climate,
+            "population": self.population, 
+            "orbital_period": self.orbital_period,  
+            "rotation_period": self.rotation_period,
+            "diameter": self.diameter
+            # do not serialize the password, its a security breach
+        }
+
+
 class Character(db.Model):
     __tablename__ = 'characters'
     id = db.Column(db.Integer, primary_key=True)

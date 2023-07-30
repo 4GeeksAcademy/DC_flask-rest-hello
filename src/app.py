@@ -37,6 +37,11 @@ def sitemap():
     return generate_sitemap(app)
 
 # --- ENDPOINTS ---
+
+# ----------------------- GET -----------------------
+
+# CHARACTERS
+
 @app.route('/characters', methods=['GET'])
 def get_all_characters():
 
@@ -61,6 +66,8 @@ def get_one_characters(character_id):
 
     return jsonify(response_body), 200
 
+# PLANETS
+
 @app.route('/planets', methods=['GET'])
 def get_all_planets():
 
@@ -73,15 +80,116 @@ def get_all_planets():
 
     return jsonify(response_body), 200
 
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def get_one_planets(planet_id):
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+    planet_query = Planet.query.filter_by(id=planet_id).first()
+    
 
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+       "results": planet_query.serialize()
     }
 
     return jsonify(response_body), 200
+
+# USERS
+
+@app.route('/users', methods=['GET'])
+def get_all_users():
+
+    users_query = User.query.all()
+    results = list(map(lambda item: item.serialize(), users_query))
+
+    response_body = {
+       "results": results
+    }
+
+    return jsonify(response_body), 200
+
+# @app.route('/users/favoritos', methods=['GET'])
+# def handle_hello():
+
+#     response_body = {
+#         "results": "Hello, this is favoritos"
+#     }
+
+#     return jsonify(response_body), 200
+
+# ----------------------- POST -----------------------
+# CHARACTERS
+
+# @app.route('/characters', methods=['POST'])
+# def create_character():
+
+#     request_body = request.get_json(force=True)
+
+#     character = Character(name=request_body['name'],
+#                           birth_year=request_body['birth_year'],
+#                           gender=request_body['gender'], 
+#                           height=request_body['height'], 
+#                           skin_color=request_body['skin_color'], 
+#                           eye_color=request_body['eye_color'])
+    
+
+#     db.session.add(character)
+#     db.session.commit()
+
+
+#     response_body = {
+#        "results": 'Character Created'
+#     }
+
+#     return jsonify(response_body), 200
+
+# PLANETS
+
+# @app.route('/planets', methods=['POST'])
+# def create_planet():
+
+#     request_body = request.get_json(force=True)
+
+#     planet = Planet(name=request_body['name'],
+#                     climate=request_body['climate'],
+#                     population=request_body['population'], 
+#                     orbital_period=request_body['orbital_period'], 
+#                     rotation_period=request_body['rotation_period'], 
+#                     diameter=request_body['diameter'])
+    
+#     db.session.add(planet)
+#     db.session.commit()
+
+
+#     response_body = {
+#        "results": 'Planet Created'
+#     }
+
+#     return jsonify(response_body), 200
+
+# USERS
+
+# @app.route('/users', methods=['POST'])
+# def create_user():
+
+#     request_body = request.get_json(force=True)
+
+#     user = User(name=request_body['name'],
+#                 climate=request_body['climate'],
+#                 population=request_body['population'], 
+#                 orbital_period=request_body['orbital_period'], 
+#                 rotation_period=request_body['rotation_period'], 
+#                 diameter=request_body['diameter'])
+
+#     db.session.add(planet)
+#     db.session.commit()
+
+
+#     response_body = {
+#        "results": 'Planet Created'
+#     }
+
+#     return jsonify(response_body), 200
+
+
 
 # --- FIN ENDPOINTS ---
 

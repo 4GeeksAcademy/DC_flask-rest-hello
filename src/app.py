@@ -109,13 +109,23 @@ def get_all_users():
 @app.route('/users/<int:user_id>/favoritos', methods=['GET'])
 def get_favoritos(user_id):
 
-    favorito_query = Favorito.query.filter_by(id=user_id).first()
-    
+    # UN FAVORITO
+
+    favorito_query = Favorito.query.filter_by(user_id=user_id).first()
 
     response_body = {
        "results": favorito_query.serialize()
     }
 
+    # TODOS LOS FAVORITOS
+
+    # favoritos_query = Favorito.query.all()
+    # results = list(map(lambda item: item.serialize(), favoritos_query))    
+
+    # response_body = {
+    #     "results": results
+    #     }
+    
     return jsonify(response_body), 200
 
 

@@ -57,8 +57,6 @@ class Character(db.Model):
 class Favorito(db.Model):
     __tablename__ = 'favoritos'
     id = db.Column(db.Integer, primary_key=True)
-    # name = db.Column(db.String(250), nullable=False)
-    # type= db.Column(db.Integer)
     characters_id= db.Column(db.Integer, db.ForeignKey('characters.id'),nullable=True)
     planets_id= db.Column(db.Integer, db.ForeignKey('planets.id'),nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'),

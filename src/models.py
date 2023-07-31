@@ -30,6 +30,7 @@ class Planet(db.Model):
 
 class Character(db.Model):
     __tablename__ = 'characters'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=True)
     birth_year = db.Column(db.Integer, nullable=True)
@@ -53,16 +54,42 @@ class Character(db.Model):
             # do not serialize the password, its a security breach
         }
     
-# class Favorito(db.Model):
-#     __tablename__ = 'favoritos'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(250), nullable=False)
-#     characters_id= db.Column(db.Integer, db.ForeignKey('characters.id'),nullable=True)
-#     planets_id= db.Column(db.Integer, db.ForeignKey('planets.id'),nullable=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
-#                         nullable=False)
-#     def to_dict(self):
-#         return {}
+class Favorito(db.Model):
+    __tablename__ = 'favoritos'
+    id = db.Column(db.Integer, primary_key=True)
+    # name = db.Column(db.String(250), nullable=False)
+    # type= db.Column(db.Integer)
+    characters_id= db.Column(db.Integer, db.ForeignKey('characters.id'),nullable=True)
+    planets_id= db.Column(db.Integer, db.ForeignKey('planets.id'),nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                        nullable=False)
+    def __repr__(self):
+        return '<favoritos %r>' % self.id
+
+    def serialize(self):
+        character_query= Character.query.filter_by(id= self.characters_id).first()
+
+        if character_query is None:
+          character_resultado=  None
+        else:
+          character_resultado= character_query.serialize()['name']
+
+        planet_query= Planet.query.filter_by(id= self.planets_id).first()
+
+        if planet_query is None:
+          planet_resultado=  None
+        else:
+          planet_resultado= planet_query.serialize()['name']
+        
+
+        return {
+            "id": self.id,
+            "characters": character_resultado,
+            "planets": planet_resultado,
+            "user_id": self.user_id
+            # do not serialize the password, its a security breach // planet_query.serialize()['name'] // character_query.serialize()['name']
+        }
+    
 
 
 
@@ -81,7 +108,7 @@ class User(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
+            "email": self.email
             # do not serialize the password, its a security breach
         }
     

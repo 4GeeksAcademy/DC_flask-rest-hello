@@ -174,10 +174,11 @@ def del_favorito(user_id ):
     
     # favorito_query= Favorito.query.filter_by(user_id = request_body['favoritos_id']).first()
     if body["characters_id"] is None:
-        favorito_query= Favorito.query.filter_by(user_id=user_id).filter_by(planets_id=planets_id).first()
+        favorito_query= Favorito.query.filter_by(user_id=user_id).filter_by(planets_id=body["planets_id"]).first()
     
     else:
-        favorito_query= Favorito.query.filter_by(user_id=user_id).filter_by(characters_id=characters_id).first()
+        favorito_query= Favorito.query.filter_by(user_id=user_id).filter_by(characters_id=body["characters_id"]).first()
+   
 
     db.session.delete(favorito_query)
     db.session.commit()

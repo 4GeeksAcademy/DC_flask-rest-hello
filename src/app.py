@@ -130,7 +130,7 @@ def get_favoritos(user_id):
 
 
 # ----------------------- POST -----------------------
-# FAVORITOS @app.route('/users/<int:user_id>/favoritos/', methods=['POST'])
+# FAVORITOS 
 
 @app.route('/users/<int:user_id>/favoritos/', methods=['POST'])
 def add_favorito(user_id):
@@ -177,12 +177,12 @@ def create_user():
     return jsonify(response_body), 200
 
 # ----------------------- DELETE -----------------------
+
 @app.route('/users/<int:user_id>/favoritos/', methods=['DELETE'])
 def del_favorito(user_id ):
 
     body = request.get_json(force=True)
     
-    # favorito_query= Favorito.query.filter_by(user_id = request_body['favoritos_id']).first()
     if body["characters_id"] is None:
         favorito_query= Favorito.query.filter_by(user_id=user_id).filter_by(planets_id=body["planets_id"]).first()
     
@@ -200,6 +200,23 @@ def del_favorito(user_id ):
     }
 
     return jsonify(response_body), 200
+
+# ----------------------- PUT -----------------------
+
+@app.route('/users/<int:user_id>', methods=['PUT', 'GET'])
+def get_single_user(user_id):
+
+    body = request.get_json(force=True) #{ 'username': 'new_username'}
+    if request.method == 'PUT':
+        user1 = User.query.get(user_id)
+        user1.email = body["email"]
+        db.session.commit()
+        return jsonify(user1.serialize()), 200
+    if request.method == 'GET':
+        user1 = User.query.get(user_id)
+        return jsonify(user1.serialize()), 200
+
+    return "Invalid Method", 404
 
 # --- FIN ENDPOINTS ---
 

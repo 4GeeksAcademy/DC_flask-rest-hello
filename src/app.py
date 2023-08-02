@@ -13,6 +13,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+import re
 #from models import Person
 
 app = Flask(__name__)
@@ -186,9 +187,31 @@ def create_user():
             'msg':'missing parameters (email, password, is_active are required)'
         }), 400
     
-    # Verificamos email válido
+    # Verificamos email válido (basic)
 
-    if "@" not in request_body['email'] or "." not in request_body['email']:
+    # if "@" not in request_body['email'] or "." not in request_body['email']:
+    #     return jsonify ({
+    #         'msg':'wrong email format(check @ .)'
+    #     }), 400
+
+    # Verificamos email válido (pro)
+
+    def validar_email(email):
+    # Patrón de expresión regular para validar el email
+        patron_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        
+        # Usamos re.match() para verificar el patrón en el email proporcionado
+        if re.match(patron_email, email):
+            return True
+        else:
+            return False
+
+    # Ejemplo de uso:
+
+    # email_ejemplo = "usuario@example.com"
+    if validar_email(request_body['email']):
+        print("El email es válido.")
+    else:
         return jsonify ({
             'msg':'wrong email format(check @ .)'
         }), 400

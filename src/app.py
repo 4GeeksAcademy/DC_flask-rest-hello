@@ -59,6 +59,8 @@ def get_one_characters(character_id):
 
     character_query = Character.query.filter_by(id=character_id).first()
     
+    if character_query is None:
+        return jsonify({"msg": "Character not exist"}), 404
 
     response_body = {
        "results": character_query.serialize()
@@ -74,6 +76,8 @@ def get_all_planets():
     planets_query = Planet.query.all()
     results = list(map(lambda item: item.serialize(), planets_query))
 
+    
+
     response_body = {
        "results": results
     }
@@ -84,7 +88,9 @@ def get_all_planets():
 def get_one_planets(planet_id):
 
     planet_query = Planet.query.filter_by(id=planet_id).first()
-    
+
+    if planet_query is None:
+        return jsonify({"msg": "Planet not exist"}), 404
 
     response_body = {
        "results": planet_query.serialize()
@@ -166,9 +172,15 @@ def create_user():
                 password=request_body['password'],
                 is_active=request_body['is_active'])
     
+    if request_body['email'] is None or request_body['password'] is None or request_body['is_active'] is None:
+        return jsonify ({
+            'msg':'missing parameters (email, password, is_active are required)'
+        }), 400
+    
+    
+
     db.session.add(user)
     db.session.commit()
-
 
     response_body = {
        "results": 'User Created'

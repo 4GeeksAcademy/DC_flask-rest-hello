@@ -186,6 +186,12 @@ def create_user():
             'msg':'missing parameters (email, password, is_active are required)'
         }), 400
     
+    # Verificamos email válido
+
+    if "@" not in request_body['email'] or "." not in request_body['email']:
+        return jsonify ({
+            'msg':'wrong email format(check @ .)'
+        }), 400
 
 
     db.session.add(user)

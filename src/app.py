@@ -9,9 +9,18 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Character, Planet, Favorito
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 #from models import Person
 
 app = Flask(__name__)
+
+# Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
 app.url_map.strict_slashes = False
 
 db_url = os.getenv("DATABASE_URL")
@@ -177,7 +186,7 @@ def create_user():
             'msg':'missing parameters (email, password, is_active are required)'
         }), 400
     
-    
+
 
     db.session.add(user)
     db.session.commit()
@@ -229,6 +238,37 @@ def get_single_user(user_id):
         return jsonify(user1.serialize()), 200
 
     return "Invalid Method", 404
+
+
+# Create a route to authenticate your users and return JWTs. The
+# create_access_token() function is used to actually generate the JWT.
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        return jsonify({"msg": "email do not exist"}), 404
+
+    if password != user.password:
+        return jsonify({"msg": "Bad password"}), 401
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+# Protect a route with jwt_required, which will kick out requests
+# without a valid JWT present.
+@app.route("/profile", methods=["GET"])
+@jwt_required()
+def get_profile():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(email=current_user).first()
+    if user is None:
+        return jsonify({"msg": "user do not exist"}), 404
+    return jsonify(logged_in_as=current_user), 200
 
 # --- FIN ENDPOINTS ---
 
